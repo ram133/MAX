@@ -1,0 +1,21 @@
+name: max-engine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: run engine
+        run: bash max-engine/orchestrator.sh
+
+      - name: commit results
+        run: |
+          git config user.name "max-engine"
+          git config user.email "engine@local"
+          git add .
+          git commit -m "engine run"
+          git push
