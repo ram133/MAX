@@ -1,0 +1,38 @@
+name: MAX Runtime Option B
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Number of runs"
+        required: true
+        default: "3"
+      input:
+        description: "Input value"
+        required: false
+        default: ""
+
+jobs:
+  multi-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Execute Multi-Run
+        run: |
+          COUNT=${{ github.event.inputs.runs }}
+          INPUT="${{ github.event.inputs.input }}"
+
+          for i in $(seq 1 $COUNT)
+          do
+            echo "Run $i:"
+            bash orchestrator.sh "$INPUT"
+            echo ""
+          done
