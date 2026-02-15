@@ -1,0 +1,40 @@
+name: MAX Runtime Option C
+
+on:
+  workflow_dispatch:
+    inputs:
+      input:
+        description: "Input value"
+        required: false
+        default: ""
+
+jobs:
+  session-log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create Session Folder
+        run: |
+          SESSION="session-$(date +%Y%m%d-%H%M%S)"
+          mkdir -p "$SESSION"
+          echo "$SESSION" > session_name.txt
+
+      - name: Run Engine and Log Output
+        run: |
+          SESSION=$(cat session_name.txt)
+          INPUT="${{ github.event.inputs.input }}"
+          bash orchestrator.sh "$INPUT" > "$SESSION/output.json"
+
+      - name: Upload Session Log
+        uses: actions/upload-artifact@v4
+        with:
+          name: session-log
+          path: ${{ steps.session-log.outputs.session }}
