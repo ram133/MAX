@@ -1,0 +1,65 @@
+name: MAX Runtime Option D
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Number of runs"
+        required: true
+        default: "3"
+      input:
+        description: "Input value"
+        required: false
+        default: ""
+
+jobs:
+  orchestrated:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create Session Folder
+        run: |
+          SESSION="session-$(date +%Y%m%d-%H%M%S)"
+          mkdir -p "$SESSION"
+          echo "$SESSION" > session_name.txt
+
+      - name: Execute Orchestrated Runs
+        run: |
+          SESSION=$(cat session_name.txt)
+          COUNT=${{ github.event.inputs.runs }}
+          INPUT="${{ github.event.inputs.input }}"
+
+          mkdir -p "$SESSION/runs"
+
+          for i in $(seq 1 $COUNT)
+          do
+            bash orchestrator.sh "$INPUT" > "$SESSION/runs/run-$i.json"
+          done
+
+      - name: Build Aggregated Output
+        run: |
+          SESSION=$(cat session_name.txt)
+          echo "[" > "$SESSION/combined.json"
+          COUNT=${{ github.event.inputs.runs }}
+
+          for i in $(seq 1 $COUNT)
+          do
+            cat "$SESSION/runs/run-$i.json" >> "$SESSION/combined.json"
+            if [ $i -lt $COUNT ]; then echo "," >> "$SESSION/combined.json"; fi
+          done
+
+          echo "]" >> "$SESSION/combined.json"
+
+      - name: Upload Orchestrated Session
+        uses: actions/upload-artifact@v4
+        with:
+          name: orchestrated-session
+          path: ${{ steps.orchestrated.outputs.session }}
