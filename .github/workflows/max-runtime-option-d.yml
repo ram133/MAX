@@ -1,0 +1,23 @@
+name: max-runtime-option-d
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: run meta engine option D
+        env:
+          MODE: option-d
+        run: bash max-runtime/runtime.sh
+
+      - name: commit results
+        run: |
+          git config user.name "max-meta-engine"
+          git config user.email "engine@local"
+          git add .
+          git commit -m "meta engine option D run" || echo "no changes"
+          git push
