@@ -1,0 +1,4 @@
+<body style="background:#000;color:#0f0;font-family:monospace;text-align:center;text-transform:uppercase;padding:50px"><div id="v"></div><script>
+const u=new URLSearchParams(location.search),s=u.get('item_number'),e='crh2509@icloud.com',p=[{id:'book',n:'SUCCESS',v:'1.00'}],d=document.getElementById('v');
+if(s){d.innerHTML=`<h1>[GRANTED]</h1><p>ID:${s}</p><a href="book.pdf" download style="border:1px solid #0f0;color:#0f0;padding:20px;text-decoration:none">DOWNLOAD</a>`}else{d.innerHTML=`<div>${e}</div>`+p.map(x=>`<div style="border:1px solid #0f0;margin:20px;padding:20px">${x.n}<br>$${x.v}<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${e}&item_name=${x.n}&item_number=${x.id}&amount=${x.v}&currency_code=USD&return=${location.href}" style="background:#0f0;color:#000;display:block;padding:10px;margin-top:10px;font-weight:bold;text-decoration:none">[BUY]</a></div>`).join('')}
+</script>
